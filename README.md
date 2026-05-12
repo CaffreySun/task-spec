@@ -2,10 +2,16 @@
 
 Prevents AI from executing before thinking. When you ask AI to build, fix, or change anything, it produces an inspectable artifact before writing code — exposing misunderstandings, gaps, and overengineering before they become bugs.
 
+
 ## Install
 
 ```bash
 npx skills add CaffreySun/task-artifact
+```
+
+Or for Claude Code:
+```bash
+claude plugins install github.com/CaffreySun/task-artifact
 ```
 
 ## What it does
