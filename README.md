@@ -1,22 +1,16 @@
 # task-artifact
 
-A Claude Code skill that prevents AI from executing before thinking. When you ask Claude to build, fix, or change anything, it produces an inspectable artifact before writing code — exposing misunderstandings, gaps, and overengineering before they become bugs.
+Prevents AI from executing before thinking. When you ask AI to build, fix, or change anything, it produces an inspectable artifact before writing code — exposing misunderstandings, gaps, and overengineering before they become bugs.
 
 ## Install
 
 ```bash
-claude plugins install github.com/CaffreySun/task-artifact
-```
-
-Or manually:
-```bash
-mkdir -p ~/.claude/skills/task-artifact
-cp SKILL.md ~/.claude/skills/task-artifact/
+npx skills add CaffreySun/task-artifact
 ```
 
 ## What it does
 
-When triggered, Claude produces a structured artifact covering:
+When triggered, the AI produces a structured artifact covering:
 
 - **Why** — the problem, who's affected, desired outcome
 - **What** — concrete deliverable, not vague intent
