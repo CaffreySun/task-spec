@@ -1,0 +1,7 @@
+{
+  "name": "task-artifact",
+  "version": "1.0.0",
+  "description": "Claude Code skill: produce an inspectable artifact before executing any task requiring decisions",
+  "license": "MIT",
+  "keywords": ["claude-code", "skill", "task-artifact", "planning"]
+}
