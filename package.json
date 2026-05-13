@@ -1,8 +1,7 @@
 {
-  "name": "task-artifact",
-  "version": "1.1.0",
-
-  "description": "AI skill: produce an inspectable artifact before executing any task requiring decisions",
+  "name": "task-spec",
+  "version": "2.0.0",
+  "description": "AI skill: produce an inspectable spec via a two-loop quality-control process before executing any task",
   "license": "MIT",
-  "keywords": ["skill", "task-artifact", "planning", "ai-agent"]
+  "keywords": ["skill", "task-spec", "planning", "ai-agent"]
 }
