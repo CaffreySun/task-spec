@@ -106,15 +106,17 @@ claude plugins install github.com/CaffreySun/task-spec
 
 ## How it works
 
-**Inner loop** (Think ⇄ Reflect) — the AI produces a spec with explicit
-reasoning, then challenges it. Does it handle empty input? What assumption
-could be wrong? Is there a simpler approach? What's the blast radius? If the
-spec has gaps, go back to Think and fix it.
+**Inner loop** (Explore → Spec → Challenge) — the AI traverses the solution
+space, locks in a direction with measurable criteria, then challenges it
+adversarially. Were alternatives considered? What assumption could be wrong?
+Is there a simpler approach? Was the solution space thoroughly traversed? If
+the spec has gaps, routing depends on severity: minor defects return to Spec,
+major defects return to Explore.
 
-**Outer loop** (Execute → Verify → Think) — the AI follows the spec precisely,
-then checks every acceptance criterion against the actual output with evidence.
-If anything fails, go back to Think with the deviation as input.
-
+**Outer loop** (Execute → Verify → Explore) — the AI follows the spec
+precisely, then checks every acceptance criterion against actual output with
+evidence. If anything fails, the failure is first analyzed for validity, then
+returns to Explore for a new cycle.
 Every spec is written to `.task_spec/<slug>.md`, creating an audit trail.
 
 ## License
