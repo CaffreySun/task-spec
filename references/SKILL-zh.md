@@ -275,3 +275,16 @@
 **挑战 subagent**：非平凡任务应当委派给 subagent（类型 `reviewer`）执行挑战。
 委派内容必须包含：问题描述、探索产出、定规正文、五个对抗性问题。subagent
 回答五个问题；父级负责缺陷分类和路由。
+
+### 运行时阶段强制（hook）
+
+配套 hook 文件 `hooks/task-spec-phase-gate.ts` 在工具层强制执行阶段纪律。
+在探索、定规、挑战阶段，hook 阻断执行工具（bash、write、edit、browser 等）
+和非只读 MCP 工具。仅当 `todo_write` 状态进入执行或审查阶段时才解锁。
+
+hook 防御的是阶段漂移——模型忘记自己在哪个阶段、自动滑向执行。不能防止
+故意绕过。已知局限：模型控制自身 todo 状态；subagent `task` 始终允许；
+外层执行中的递归内层循环可能误放行。
+
+安装时在 omp hooks 配置中指定 hook 路径。hook **不得**在 subagent 会话中加载——
+仅应管控主会话。
