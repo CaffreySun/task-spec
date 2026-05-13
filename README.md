@@ -13,27 +13,30 @@ This isn't laziness. The mechanism behind it is deeper.
 
 ## The problem
 
-LLMs don't have an internal verification loop. They generate the next token
-based on statistical likelihood, not logical necessity. A mathematically correct
-proof and a plausible-but-wrong argument look the same to the model because both
-exist in the training distribution — the model cannot distinguish them from
-within.
+When two equally intelligent people do the same task, what makes one produce
+better work? The better one thinks before acting — explores alternatives,
+questions assumptions, anticipates problems. The worse one starts with the
+first idea and races to finish.
 
-This is the mechanism behind every "sloppy AI" behavior:
+An LLM's default mode is the second person. Next-token prediction has no
+concept of pausing to evaluate. The highest-probability continuation is the
+first "thought," and the model runs with it.
 
-- **Won't stop to question direction** — no mechanism to self-interrupt based on
-  correctness evaluation
-- **Defaults to "just start coding"** — the shortest path from prompt to
-  completion is the most probable path
-- **Hallucinates plausible wrong answers** — plausible = statistically frequent;
-  verifying correctness is a capability that doesn't exist
-- **Drifts or contradicts itself in long sessions** — the attention mechanism
-  decays; no verification step catches contradictions
+This plays out in two dimensions:
 
-Training data quality doesn't fix this. The model can only reproduce what
-correct work *looks like* — not the reasoning that produced it. The verification
-that a human does before writing is invisible to the model. It sees the output,
-not the process.
+**Before acting — shallow thinking.** The model takes the first direction that
+comes to mind. It doesn't explore alternatives, doesn't question whether the
+problem is even the right problem, doesn't anticipate downstream effects. It
+confuses "having an answer" with "having the right answer."
+
+**After acting — no verification.** The model doesn't check its work. "Done"
+equals "done well." It won't catch contradictions, won't compare output against
+intent, won't ask whether anything was missed.
+
+Training data quality doesn't fix either dimension. Better data teaches the
+model what correct work *looks like*, not the thinking that produced it. The
+pauses, the doubts, the abandoned first attempts — the human verification
+process — are invisible in the final output.
 ## Can it be fixed?
 
 This is an architectural limitation, not a training data issue. The core
@@ -46,34 +49,49 @@ process reward models or reasoning architectures that pause, evaluate, and
 revise mid-generation point toward genuine self-verification. But this is a
 research frontier — not something we can depend on today.
 
-At the **system level**: it can be mitigated now. The verification doesn't have
-to live inside the model. External scaffolding — forced adversarial challenge,
-binding contracts, evidence-based review — can compensate for the missing
-capability. This is the approach task-spec takes.
+At the **system level**: the two dimensions are not equally hard — they differ
+in kind.
 
-task-spec should never try to "make the model better." Its job is to make the
-model **unable to escape** verification.
+Verification has an **external value function**. "Does the output match the
+spec?" is an objective question. You can enforce it mechanically with binding
+contracts and evidence-based review. The standard sits outside the model.
+
+Thinking has no such thing. "Is this the right approach?" "Is this good enough?"
+These need an **internal value function** — a sense of "better" that points
+toward deeper work. The model has no such gradient. Next-token prediction orients
+toward "most likely," not "better." The model doesn't settle for shallow because
+it's lazy — it settles for shallow because it cannot tell which direction is
+deeper. The human analogy is attitude: a person who *wants* to do good work
+naturally explores alternatives, questions assumptions, anticipates problems.
+The model has no equivalent drive. It can't *want* anything.
+
+This is why the two dimensions cannot be addressed with the same mechanism.
+Verification can be enforced by an external contract. Thinking can only be
+encouraged by structure that simulates a quality gradient — forcing the model
+through steps that a high-attitude person would take naturally.
 
 ## The answer
 
-task-spec constructs an artificial adversarial environment that compensates for
-this missing capability. It doesn't make the model verify — it makes the model
-**unable to bypass** verification.
+task-spec addresses both dimensions with distinct mechanisms.
 
-Before acting, the AI produces an inspectable **spec** with reasoning, steps,
-and measurable acceptance criteria. The spec is a binding contract — Execute
-follows it, Verify judges by it. No spec, no execution.
+**For the verification gap — Spec-Driven execution.**
+The spec is a binding contract: Execute follows it, Verify judges by it. Every
+acceptance criterion is checked against actual output with evidence. No spec,
+no execution. Verification is enforced from the outside — the answer either
+matches or it doesn't.
 
-The spec is then subjected to an adversarial challenge (edge cases, wrong
-assumptions, overengineering, risk). If the spec fails, the AI returns to
-thinking. This loops until the spec survives.
+**For the thinking gap — Explore before Spec.**
+Before committing to a plan, the model traverses the solution space: understand
+the problem itself, consider possible directions, eliminate dead ends. Only
+then does it lock in a direction, anticipate what could go wrong, and define
+measurable success criteria. The spec is the output of this exploration, not
+its starting point. The structure simulates what a high-attitude person does
+naturally — walk the space before landing.
 
-After execution, every acceptance criterion is checked against actual output
-with evidence. If anything fails, the AI returns to thinking with the deviation
-as input for a new cycle.
-
-The spec can be 2 lines. It cannot be zero.
-
+The exploration is itself subject to adversarial challenge. Before spec is
+finalized, the model confronts its own reasoning: was the solution space
+thoroughly traversed? Are the eliminations defensible? Only after surviving
+this challenge does the spec become the contract for execution.
 ## Install
 
 ```bash
