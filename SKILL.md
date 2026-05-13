@@ -317,20 +317,3 @@ Explore → Spec → Challenge → Execute → Verify cycle.
 subagent (type `reviewer`). The assignment MUST include: problem description,
 Explore output, Spec body, and the five adversarial questions. The subagent
 answers the five questions; the parent handles defect classification and routing.
-
-### Runtime phase enforcement (hook)
-
-The companion hook at `hooks/task-spec-phase-gate.ts` enforces the phase
-discipline at the tool level. During Explore, Spec, and Challenge phases, the
-hook blocks execution tools (bash, write, edit, browser, etc.) and non-read
-MCP tools. Only when the `todo_write` state reaches Execute or Verify are
-these tools unlocked.
-
-The hook provides defense against phase-drift — the model forgetting which
-phase it is in and autocompleting toward execution. It does not prevent
-deliberate bypass. Known limitations: model controls its own todo state;
-subagent `task` is always-allowed; recursive inner cycles may produce false
-allows during outer Execute.
-
-To install, configure the hook path in your omp hooks configuration. The hook
-MUST NOT be loaded in subagent sessions — it should only gate the main session.
