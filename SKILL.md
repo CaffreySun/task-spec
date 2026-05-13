@@ -132,10 +132,10 @@ beyond tool availability. No overengineering."
 **Every action must be traceable to a specific entry in the spec.**
 
 **MUST**:
+- Before starting, initialize `todo_write` with the spec's steps (see Progress visibility)
 - Complete one step, confirm it locally, move to the next
 - If you hit something the spec does not cover → PAUSE → return to Think (not
   Reflect — this is a new problem to plan for)
-
 **MUST NOT**:
 - Deviate from the spec (unless Think+Reflect approved a scope change)
 - Skip steps or merge steps
@@ -223,9 +223,12 @@ File structure template: see `references/spec-template.md`.
 
 ### Progress visibility
 
-- When the spec has **3 or more distinct steps**, use `todo_write` to track progress
-  - Map each step to a todo item; check off as you complete
+- When entering the Execute phase, if the spec has **3 or more distinct steps**,
+  use `todo_write` to track progress. Map each step to a todo item; check off as
+  you complete each one.
 - Specs with 1–2 steps do not need a todo list
+- **MUST NOT** create a todo list during Think or Reflect — the steps are not
+  final until Reflect passes
 
 ### Subagent delegation
 
@@ -237,6 +240,4 @@ Use a `task` subagent for a recursively decomposed sub-step when **all** of thes
 Otherwise, run the sub-iteration inline. Sub-task specs go in their own file
 (see file location and naming); the subagent runs its own think→reflect→execute→verify cycle.
 
----
 
-A Chinese version of this skill is available at `references/SKILL-zh.md`.
