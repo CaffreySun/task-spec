@@ -157,7 +157,7 @@ beyond tool availability. No overengineering."
 subagent (task type `reviewer`). The subagent assignment MUST include: problem
 description, full Explore output, full Spec body, and the five adversarial
 questions above. The subagent answers the five questions. The parent then handles
-analysis and routing.
+defect classification and routing.
 
 **When defects are found (FAIL)**, apply analysis-first discipline:
 
@@ -214,11 +214,16 @@ the spec.
 Give each a PASS/FAIL with evidence.
 
 - **All PASS** → task complete
-- **One or more FAIL** → first analyze each failure using the analysis-first
-  discipline:
-  1. Is the failure genuine? (valid / partially valid / invalid / subsumed)
+- **One or more FAIL** → analysis-first discipline:
+  1. **Classify each failure**: valid / partially valid / invalid / subsumed
   2. Only after analysis, return to Explore with the confirmed deviations
      as input for a new cycle
+
+**Subagent delegation**: for non-trivial tasks, SHOULD delegate Verify to a
+subagent (task type `reviewer`). The subagent assignment MUST include: the
+spec body (with acceptance criteria) and the actual output to verify. The
+subagent checks each criterion and returns PASS/FAIL with evidence. The
+parent handles failure analysis and routing.
 
 **MUST NOT**:
 - Claim PASS when a problem exists
@@ -282,12 +287,14 @@ track progress with `todo_write` instead.
 
 File structure template: see `references/spec-template.md`.
 **Constraints**:
+- Explore output must list directions considered and eliminated — "no alternatives
+  to the first idea" is forbidden (trivial tasks excepted)
 - Spec "How" must be executable — another engineer following it encounters zero
   ambiguity
 - Spec "Verify" criteria must be measurable — not "tests pass" but
   "`pnpm test` exit code 0, all 373 pass"
-- Challenge answers must be concrete — "no edge cases" and "no assumptions" are
-  forbidden (trivial tasks excepted)
+- Challenge answers must be concrete — "no edge cases," "no assumptions," and
+  "no missed directions" are forbidden without specifics (trivial tasks excepted)
 - Verify must attach evidence per criterion — "looks correct" is forbidden
 - After multiple cycles, only the last cycle's spec body is the authoritative
   contract; earlier cycles are the audit trail
@@ -313,7 +320,3 @@ Otherwise, run the sub-iteration inline. Sub-task specs go in their own file
 (see file location and naming); the subagent runs its own
 Explore → Spec → Challenge → Execute → Verify cycle.
 
-**Challenge subagent**: for non-trivial tasks, SHOULD delegate Challenge to a
-subagent (type `reviewer`). The assignment MUST include: problem description,
-Explore output, Spec body, and the five adversarial questions. The subagent
-answers the five questions; the parent handles defect classification and routing.
