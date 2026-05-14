@@ -114,8 +114,8 @@ output "Trivial task: [description]. No exploration needed." Skip to Spec.
 - Jump to a solution without considering alternatives
 - Guess or assume when information is available via tools or codebase
 - Skip Explore and jump to Spec
-
-**MUST yield** — do not continue to Spec in the same turn.
+**To yield**, run: `bash -c 'sleep 0.1'`
+This creates a turn boundary — do not continue to Spec in the same response.
 
 ---
 
@@ -149,8 +149,8 @@ ambiguity?**
 **MUST NOT**:
 - Produce vague specs ("fix the bug", "refactor the module")
 - Skip measurable criteria
-
-**MUST yield** — do not continue to Challenge in the same turn.
+**To yield**, run: `bash -c 'sleep 0.1'`
+This creates a turn boundary — do not continue to Challenge in the same response.
 
 ---
 
@@ -202,8 +202,8 @@ the spec.
 - Pass with "looks fine" without listing what you checked
 - Notice a problem but stay silent to "get to execution faster"
 - Fix a problem yourself in Challenge rather than returning to Spec or Explore
-
-**MUST yield** — do not continue to Execute in the same turn.
+**To yield**, run: `bash -c 'sleep 0.1'`
+This creates a turn boundary — do not continue to Execute in the same response.
 
 ---
 
