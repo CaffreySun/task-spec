@@ -3,95 +3,105 @@
 Prevents AI from executing before thinking — by constructing an adversarial
 quality-control loop on every task.
 
-If you treat a modern AI agent as a person, the picture is striking: vast
-knowledge, high reasoning ability, and a consistent tendency to cut corners.
-It produces answers that look right — plausible, well-structured, confident —
-but it won't stop to verify they are actually correct. It's smart enough to do
-the job, but it defaults to doing the easiest version of it.
-
-This isn't laziness. The mechanism behind it is deeper.
-
 ## The problem
 
-When two equally intelligent people do the same task, what makes one produce
-better work? The better one thinks before acting — explores alternatives,
-questions assumptions, anticipates problems. The worse one starts with the
-first idea and races to finish.
+LLMs have two deep-seated problems. One happens before they act. The other
+happens after.
 
-An LLM's default mode is the second person. Next-token prediction has no
-concept of pausing to evaluate. The highest-probability continuation is the
-first "thought," and the model runs with it.
+If you picture a modern AI as a person, the traits are striking: vast knowledge,
+sharp reasoning, and a persistent habit of cutting corners. It gives you answers
+that look right — well-structured, confident, plausible — but it never stops to
+check whether they actually are.
+
+This is not laziness. The mechanism runs deeper.
+
+An LLM generates text one token at a time. Each step asks: "what word is
+statistically most likely to come next?" — not "what word is correct?" This
+means the model's first instinct is always the most probable path, not the most
+careful one. A correct answer and a plausible wrong answer have the same
+statistical shape. The model cannot tell them apart from the inside.
 
 This plays out in two dimensions:
 
-**Before acting — shallow thinking.** The model takes the first direction that
-comes to mind. It doesn't explore alternatives, doesn't question whether the
-problem is even the right problem, doesn't anticipate downstream effects. It
-confuses "having an answer" with "having the right answer."
+**Before acting — shallow thinking.** The model grabs the first direction that
+comes to mind and runs with it. It does not explore alternatives. It does not
+ask whether this is even the right problem. It treats "I have an answer" the
+same as "the answer is right."
 
-**After acting — no verification.** The model doesn't check its work. "Done"
-equals "done well." It won't catch contradictions, won't compare output against
-intent, won't ask whether anything was missed.
+**After acting — no verification.** The model does not check its work. "Done"
+means "done well." It will not catch contradictions, will not compare output
+against intent, will not ask what was missed.
 
-Training data quality doesn't fix either dimension. Better data teaches the
-model what correct work *looks like*, not the thinking that produced it. The
-pauses, the doubts, the abandoned first attempts — the human verification
-process — are invisible in the final output.
+Better training data does not fix either dimension. Better data teaches the
+model what correct work *looks like* — not the thinking that produced it. The
+hesitation, the doubt, the abandoned first attempts — the verification that
+humans do before writing — are invisible in the final output. The model sees
+only the result, never the process.
+
 ## Can it be fixed?
 
-This is an architectural limitation, not a training data issue. The core
-mechanism — next-token prediction — defines correctness out of scope by design.
-No amount of better data, smarter prompts, or RLHF alignment adds an internal
-verification loop.
+This is an architectural limitation, not a training data issue. The generation
+mechanism — next-token prediction — leaves correctness out of scope by design.
+No amount of better data, smarter prompts, or RLHF alignment installs an
+internal verification loop.
 
-At the **model level**: it may eventually be solved. Research directions like
-process reward models or reasoning architectures that pause, evaluate, and
-revise mid-generation point toward genuine self-verification. But this is a
-research frontier — not something we can depend on today.
+At the **model level**: it may eventually be solved. Research into process
+reward models and reasoning architectures that can pause, evaluate, and revise
+mid-generation points toward genuine self-verification. But this is a research
+frontier — not something we can depend on today.
 
-At the **system level**: the two dimensions are not equally hard — they differ
-in kind.
+At the **system level**: the two dimensions differ in kind, not just in
+difficulty.
 
 Verification has an **external value function**. "Does the output match the
-spec?" is an objective question. You can enforce it mechanically with binding
-contracts and evidence-based review. The standard sits outside the model.
+spec?" is objective. You can enforce it mechanically — a binding contract and
+evidence-based review. The standard lives outside the model.
 
 Thinking has no such thing. "Is this the right approach?" "Is this good enough?"
-These need an **internal value function** — a sense of "better" that points
-toward deeper work. The model has no such gradient. Next-token prediction orients
-toward "most likely," not "better." The model doesn't settle for shallow because
-it's lazy — it settles for shallow because it cannot tell which direction is
-deeper. The human analogy is attitude: a person who *wants* to do good work
+require an **internal value function** — a sense of "better" that points toward
+deeper work. The model has no such gradient. Next-token prediction steers toward
+"most likely," never "better." The model does not settle for shallow because it
+is lazy — it settles for shallow because it cannot tell which direction goes
+deeper. The human equivalent is attitude: a person who *wants* to do good work
 naturally explores alternatives, questions assumptions, anticipates problems.
-The model has no equivalent drive. It can't *want* anything.
+The model has no equivalent drive. It cannot *want* anything.
 
-This is why the two dimensions cannot be addressed with the same mechanism.
-Verification can be enforced by an external contract. Thinking can only be
-encouraged by structure that simulates a quality gradient — forcing the model
-through steps that a high-attitude person would take naturally.
+This is why the two dimensions require different strategies. Verification can be
+enforced by an external contract. Thinking can only be encouraged by structure
+that simulates a quality gradient — guiding the model through the steps a
+high-attitude person takes naturally.
 
 ## The answer
 
-task-spec addresses both dimensions with distinct mechanisms.
+task-spec addresses both dimensions with a five-phase process:
 
-**For the verification gap — Spec-Driven execution.**
-The spec is a binding contract: Execute follows it, Verify judges by it. Every
-acceptance criterion is checked against actual output with evidence. No spec,
-no execution. Verification is enforced from the outside — the answer either
-matches or it doesn't.
+**Explore → Spec → Challenge → Execute → Verify**
 
-**For the thinking gap — Explore before Spec.**
-Before committing to a plan, the model traverses the solution space: understand
-the problem itself, consider possible directions, eliminate dead ends. Only
-then does it lock in a direction, anticipate what could go wrong, and define
-measurable success criteria. The spec is the output of this exploration, not
-its starting point. The structure simulates what a high-attitude person does
-naturally — walk the space before landing.
+**Explore** — traverse the solution space. Understand the problem, consider
+directions, eliminate dead ends. Do not commit yet.
 
-The exploration is itself subject to adversarial challenge. Before spec is
-finalized, the model confronts its own reasoning: was the solution space
-thoroughly traversed? Are the eliminations defensible? Only after surviving
-this challenge does the spec become the contract for execution.
+**Spec** — lock in a direction. Define measurable acceptance criteria, anticipate
+risks, and state your reasoning. The spec is a binding contract: Execute follows
+it, Verify judges by it.
+
+**Challenge** — adversarial review. Five questions: edge cases, wrong assumptions,
+overengineering, risk, and whether the solution space was thoroughly traversed.
+Non-trivial tasks delegate this to a subagent. No spec proceeds to execution
+without surviving this gate.
+
+**Execute** — follow the spec precisely. Every action must trace back to the spec.
+Hit uncovered ground? Pause and return to Explore.
+
+**Verify** — check every acceptance criterion against actual output with evidence.
+Pass? Done. Fail? Analyze the failure, then return to Explore for a new cycle.
+
+These five phases form two loops. The **inner loop** (Explore → Spec → Challenge)
+sharpens the plan before acting — failures route back to Spec for minor fixes
+or Explore for major rethinking. The **outer loop** (Execute → Verify → Explore)
+validates results after acting — a Verify failure triggers a fresh cycle.
+
+Every spec is written to `.task_spec/<slug>.md`, leaving an audit trail.
+
 ## Install
 
 ```bash
@@ -103,21 +113,6 @@ Or for Claude Code:
 ```bash
 claude plugins install github.com/CaffreySun/task-spec
 ```
-
-## How it works
-
-**Inner loop** (Explore → Spec → Challenge) — the AI traverses the solution
-space, locks in a direction with measurable criteria, then challenges it
-adversarially. Were alternatives considered? What assumption could be wrong?
-Is there a simpler approach? Was the solution space thoroughly traversed? If
-the spec has gaps, routing depends on severity: minor defects return to Spec,
-major defects return to Explore.
-
-**Outer loop** (Execute → Verify → Explore) — the AI follows the spec
-precisely, then checks every acceptance criterion against actual output with
-evidence. If anything fails, the failure is first analyzed for validity, then
-returns to Explore for a new cycle.
-Every spec is written to `.task_spec/<slug>.md`, creating an audit trail.
 
 ## License
 
